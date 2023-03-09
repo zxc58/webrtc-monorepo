@@ -1,54 +1,32 @@
 <script setup>
-import { onMounted } from 'vue'
+import { onBeforeMount, onMounted } from 'vue'
+import { NLayout, NLayoutContent, NLayoutSider } from 'naive-ui'
 import { useRouter } from 'vue-router'
-import { useLocalStorage } from '@vueuse/core'
-import { storeToRefs } from 'pinia'
-import {
-  NH1,
-  NButton,
-  NLayout,
-  NLayoutHeader,
-  NLayoutContent,
-  NLayoutSider,
-  NLayoutFooter,
-} from 'naive-ui'
+import to from 'await-to-js'
+import SideHeader from '../components/Sides/SideHeader.vue'
+import SideBody from '../components/Sides/SideBody.vue'
 import { useWebsocketStore } from '../stores/websocket'
-const router = useRouter()
-const accessToken = useLocalStorage('access_token')
+import { apiVerifyToken } from '../utils/api'
+import { useUserStore } from '../stores/user'
 const websocketStore = useWebsocketStore()
+const router = useRouter()
+const userStore = useUserStore()
+onBeforeMount(async () => {
+  const [error, responseData] = await to(apiVerifyToken())
+  if (error) return router.push('/signin')
+  userStore.changeUser(responseData.user)
+})
 onMounted(() => {
   websocketStore.createSocket()
 })
-async function signout() {
-  accessToken.value = 'undefined'
-  websocketStore.closeSocket()
-  router.push('/signin')
-}
 </script>
 <template>
-  <!-- <n-layout>
-    <n-layout-header :bordered="true">
-      <n-button type="error" @click="signout"> Sign out </n-button>
-    </n-layout-header>
-    <n-layout has-sider>
-      <n-layout-sider content-style="padding: 24px;"> 海淀桥 </n-layout-sider>
-      <n-layout-content content-style="padding: 24px;">
-        平山道
-      </n-layout-content>
-    </n-layout>
-    <n-layout-footer>成府路</n-layout-footer>
-  </n-layout> -->
   <n-layout has-sider>
-    <n-layout-sider :bordered="true">
-      <n-layout-header> side header </n-layout-header>
-      <n-layout-content> side content </n-layout-content>
+    <n-layout-sider>
+      <side-header />
+      <side-body />
     </n-layout-sider>
-    <n-layout-content> 視訊框 </n-layout-content>
+    <n-layout-content style="background-color: bisque"> </n-layout-content>
   </n-layout>
 </template>
-<style scoped>
-.n-layout-content {
-  /* background-color: black;
-  color: white; */
-}
-</style>
+<style scoped></style>

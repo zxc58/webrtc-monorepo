@@ -41,6 +41,19 @@ export const onLeaveRoom: RegisterEvent = function (io, socket) {
     callback()
   })
 }
+export const onGetUsers: RegisterEvent = function (io, socket) {
+  return socket.on('getUsers', async (callback) => {
+    const users: any[] = []
+    io.sockets.sockets.forEach((value, key) => {
+      if (key !== socket.id)
+        users.push({
+          socketId: key,
+          ...value.data,
+        })
+    })
+    if (callback) return callback(users)
+  })
+}
 function roomIn(socket: ServerSideSocket) {
   return Array.from(socket.rooms).find((roomId) => roomId !== socket.id)
 }

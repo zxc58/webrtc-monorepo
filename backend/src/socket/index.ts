@@ -12,14 +12,13 @@ const io = <IServer>new Server({
 //   if (!token) return
 //   try {
 //     const user = <any>verify(token, <string>process.env.ACCESS_TOKEN_SECRET)
+//     user.socketId = socket.id
 //     socket.data.user = user
-
 //     next()
 //   } catch (err: any) {
 //     console.error(err?.message ?? err)
 //   }
 // })
-
 io.on('connection', (socket) => {
   Object.values(onEvents).forEach((onEvent) => {
     onEvent(io, socket)

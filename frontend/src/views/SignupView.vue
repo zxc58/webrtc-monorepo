@@ -12,7 +12,6 @@ const model = ref({
   account: null,
   password: null,
 })
-
 async function signup(event) {
   const data = { ...model.value }
   const [error, responseData] = await to(apiSignup(data))

@@ -10,6 +10,7 @@ export interface ClientToServerEvents {
     callback: () => void
   ) => void
   leaveRoom: (callback: () => void) => void
+  getUsers: (callback: (users: any[]) => void) => void
 }
 export interface ServerToClientEvents {
   online: (client: any) => void
@@ -27,6 +28,7 @@ export interface SocketData {
     id: number
     name: string
     account: string
+    socketId: string
   }
 }
 export type ServerSideSocket = Socket<

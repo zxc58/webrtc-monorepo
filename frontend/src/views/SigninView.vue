@@ -10,8 +10,8 @@ import { signinFormRule } from '../utils/formRules'
 const router = useRouter()
 const accessToken = useLocalStorage('access_token')
 const model = ref({
-  account: null,
-  password: null,
+  account: '',
+  password: '',
 })
 async function signin() {
   const data = { ...model.value }

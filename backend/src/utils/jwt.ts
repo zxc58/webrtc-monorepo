@@ -12,7 +12,7 @@ export function signJWT(
       'lack 2 env vars: ACCESS_TOKEN_SECRET, REFRESH_TOKEN_SECRET'
     )
   const accessToken = sign({ user }, process.env.ACCESS_TOKEN_SECRET, {
-    expiresIn: '5m',
+    expiresIn: '5s',
   })
   const refreshToken = sign(
     { refreshTokenId },

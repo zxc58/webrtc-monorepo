@@ -1,9 +1,10 @@
 import { RequestHandler } from 'express'
 import { v4 as uuid } from 'uuid'
 import models from '../../db/models'
-import { signInAuth } from '../../config/passport'
+import { signInAuth, authJWT } from '../../config/passport'
 import { sendJWT, signJWT } from '../../utils/jwt'
 import { verify } from 'jsonwebtoken'
+import { SetRequired } from 'sequelize/types/utils/set-required'
 const { User } = models
 export const signUp: RequestHandler = async function (req, res) {
   try {
@@ -44,4 +45,23 @@ export const refreshToken: RequestHandler = async function (req, res) {
   const jwt = signJWT(user.toJSON(), refreshTokenId)
   await user.update({ refreshTokenId })
   sendJWT(res, jwt, 'Refresh JWT successfully')
+}
+export const verifyToken: RequestHandler = async function (req, res) {
+  const { refresh_token } = req.cookies
+  if (!refresh_token) return res.status(401).json({ message: 'Lack JWT' })
+  const payload = verify(
+    refresh_token,
+    process.env.REFRESH_TOKEN_SECRET as string
+  ) as { refreshTokenId: string }
+  const user = await User.findOne({
+    where: { refreshTokenId: payload.refreshTokenId },
+    attributes: { exclude: ['refreshTokenId', 'password'] },
+  })
+  if (!user) return res.status(401).json({ message: 'Refresh JWT fail' })
+  return res.json({
+    message: 'Verify refresh token successfully',
+    data: {
+      user: user.toJSON(),
+    },
+  })
 }

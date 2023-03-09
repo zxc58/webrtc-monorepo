@@ -4,6 +4,9 @@ import { io } from 'socket.io-client'
 const socketUrl = 'http://127.0.0.1:3000'
 export const useWebsocketStore = defineStore('websocket', () => {
   const socket = ref(null)
+  const socketId = computed(() => {
+    return socket.value.id
+  })
   function createSocket() {
     socket.value = io(socketUrl, {
       auth: {
@@ -17,5 +20,8 @@ export const useWebsocketStore = defineStore('websocket', () => {
   function closeSocket() {
     socket.value.close()
   }
-  return { socket, createSocket, closeSocket }
+  function getUsers(callback) {
+    socket.value.emit('getUsers', callback)
+  }
+  return { socketId, createSocket, closeSocket, getUsers }
 })
